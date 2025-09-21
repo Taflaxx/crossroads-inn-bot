@@ -128,7 +128,7 @@ async def get_sc_build(url: str, api: API = API("")) -> Build:
 
 
 async def get_sc_builds(profession: Profession):
-    # Find all recommended and viable builds that are not kite builds
+    # Find all recommended and viable builds that are not kite builds or beginner builds
     links = []
     for category in ["featured"]:
         resp = await sc_get(f"https://snowcrows.com/builds/{profession.name}?c={category}")

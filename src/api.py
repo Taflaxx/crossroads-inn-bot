@@ -182,16 +182,26 @@ class API:
         # check if all bosses were killed
         if len(bosses_killed) == max_bosses:
             fbg.add(Feedback(f"You have killed {len(bosses_killed)}/{max_bosses} different bosses", FeedbackLevel.SUCCESS))
-        # if only HT CM is missing return success
-        elif len(bosses_missing) == 1 and bosses_missing[0].full_name == "Harvest Temple CM":
-            fbg.add(Feedback(f"You have killed {len(bosses_killed)}/{max_bosses} different bosses", FeedbackLevel.SUCCESS))
-        # if not enough bosses were killed return error
+        # if not enough bosses were killed check for missing encounters
         else:
-            fbg.add(Feedback(f"You have killed {len(bosses_killed)}/{max_bosses} different bosses. "
-                             f"You need to have killed all bosses except HT CM.", FeedbackLevel.ERROR))
-            nl = "\n"
-            fbg.add(Feedback(f"You are missing the following bosses:\n"
-                             f"{nl.join([f'- {boss.full_name}' for boss in bosses_missing])}", FeedbackLevel.ERROR))
+            # if only HT CM + ToF CM is missing return success
+            permitted_missing_bosses = ["Harvest Temple CM", "Temple of Febe CM"]
+            applicant_can_pass = True
+        
+            for boss in bosses_missing:
+                if boss.full_name not in permitted_missing_bosses:
+                    applicant_can_pass = False
+                    
+            if applicant_can_pass:
+                fbg.add(Feedback(f"You have killed {len(bosses_killed)}/{max_bosses} different bosses", FeedbackLevel.SUCCESS))
+            # if not enough bosses were killed return error
+            else:
+                fbg.add(Feedback(f"You have killed {len(bosses_killed)}/{max_bosses} different bosses. "
+                                 f"You need to have killed all bosses except HT CM & ToF CM.", FeedbackLevel.ERROR))
+                nl = "\n"
+                fbg.add(Feedback(f"You are missing the following bosses:\n"
+                                 f"{nl.join([f'- {boss.full_name}' for boss in bosses_missing])}", FeedbackLevel.ERROR))
+                
         return fbg
 
     async def get_equipment(self, character: str, tab: int = 1):

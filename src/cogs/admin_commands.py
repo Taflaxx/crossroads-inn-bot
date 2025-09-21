@@ -1,4 +1,5 @@
 import traceback
+from io import BytesIO
 
 import discord
 from discord import app_commands, Interaction, Embed
@@ -106,15 +107,15 @@ class AdminCommands(commands.Cog):
             for profession in Profession:
                 professions.append(profession)
 
-        embed = CustomEmbed(self.bot, title="Builds")
+        builds = ""
         async with Session() as session:
             for profession in professions:
-                value = ""
+                builds += "Profession: " + profession.name + "\n"
                 for build in await Build.from_profession(session, profession):
-                    value += f"{build.to_link()}\n"
-                embed.add_field(name=profession.name, value=value)
+                    builds += f"{build.to_link()}\n"
+                builds += "\n"
 
-        await interaction.followup.send(embed=embed, ephemeral=True)
+        await interaction.followup.send("Builds", file=discord.File(BytesIO(builds.encode(encoding="utf-8")), "builds.txt"), ephemeral=True)
 
     build = app_commands.Group(name="build", description="Add and remove builds")
 
