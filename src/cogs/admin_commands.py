@@ -1,3 +1,5 @@
+import traceback
+
 import discord
 from discord import app_commands, Interaction, Embed
 from discord.ext import commands
@@ -178,6 +180,7 @@ class AdminCommands(commands.Cog):
                                 await build.archive()
                         session.add(build_sc)
                     except Exception as e:
+                        print(f"Error adding build {url}:\n{traceback.format_exc()}")
                         errors += f"Error adding build {url}: {e}\n"
 
                 # Archive builds that are not in the list of new builds

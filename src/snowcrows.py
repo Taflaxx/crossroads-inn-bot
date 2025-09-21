@@ -1,5 +1,9 @@
+import asyncio
+
 from bs4 import BeautifulSoup
 import aiohttp
+from soupsieve.util import lower
+
 from models.build import Build
 from models.enums.profession import Profession
 from models.equipment import Equipment
@@ -16,6 +20,10 @@ async def sc_get(url):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as r:
+            if "Just a moment..." in (await r.text()):
+                print(f"Cloudflare detected on {url}, waiting 10 seconds")
+                await asyncio.sleep(10)
+                return await sc_get(url)
             return await r.read()
 
 
@@ -71,7 +79,8 @@ async def get_sc_build(url: str, api: API = API("")) -> Build:
         if f"data-armory-{item.item_id}-upgrades" in str(div):
             upgrade_ids = div[f"data-armory-{item.item_id}-upgrades"].split(",")
         for upgrade_id in upgrade_ids:
-            item.add_upgrade((await api.get_item(int(upgrade_id)))["name"])
+            if upgrade_id.isdecimal():
+                item.add_upgrade((await api.get_item(int(upgrade_id)))["name"])
 
         slot = table_data[i + 1].p.span.string
         if slot == "Main Hand":
@@ -122,9 +131,11 @@ async def get_sc_builds(profession: Profession):
     # Find all recommended and viable builds that are not kite builds
     links = []
     for category in ["featured"]:
-        resp = await sc_get(f"https://snowcrows.com/builds/{profession.name}?category={category}")
+        resp = await sc_get(f"https://snowcrows.com/builds/{profession.name}?c={category}")
         sc_soup = BeautifulSoup(resp.decode("utf-8"), "html.parser")
         for link in sc_soup.find_all("a", href=True):
-            if link["href"].startswith("/builds/") and "kite" not in link["href"] and link["href"].count("/") > 2:
+            if (link["href"].startswith(f"/builds/raids/{lower(profession.name)}")
+                    and "kite" not in link["href"] and link["href"].count("/") > 3
+                    and category.lower() in link.find("div", {"class": "text-xs"}).text.lower()):
                 links.append("https://snowcrows.com" + link["href"])
     return links
