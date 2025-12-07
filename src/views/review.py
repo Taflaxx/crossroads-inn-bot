@@ -60,7 +60,7 @@ class ReviewView(View):
         await super().on_error(interaction, error, item)
 
 
-class ReviewModal(Modal, title="Tier 1 Application"):
+class ReviewModal(Modal, title="Regular Application"):
     feedback = discord.ui.TextInput(label="Feedback", style=discord.TextStyle.paragraph)
 
     def __init__(self, bot: commands.Bot, status: ApplicationStatus, application_id: int, parent_view: View):
@@ -71,9 +71,9 @@ class ReviewModal(Modal, title="Tier 1 Application"):
 
         match status:
             case ApplicationStatus.REVIEW_ACCEPTED:
-                self.feedback.default = "Congrats on tier1"
+                self.feedback.default = "Congrats on becoming a Regular"
             case ApplicationStatus.REVIEW_DENIED:
-                self.feedback.default = "Your tier1 application has been denied"
+                self.feedback.default = "Your Regular application has been denied"
 
         super().__init__()
 

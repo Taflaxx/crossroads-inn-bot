@@ -7,12 +7,10 @@ from models.application import Application
 from models.config import Config
 from models.enums.application_status import ApplicationStatus
 from models.enums.config_key import ConfigKey
-from models.enums.role import Role
 from models.feedback import *
 from api import API
 from views.application import ApplicationView
 from discord.ext import commands
-from views.submit_log import SubmitLogModal
 
 
 class ApplicationOverview(discord.ui.View):
@@ -42,56 +40,6 @@ class ApplicationOverview(discord.ui.View):
                 await interaction.response.send_message(ephemeral=True, content="You are already a Regular or above.")
                 return
         await interaction.response.send_modal(ApplicationModal(self.bot))
-
-    # Tier 2 and Tier 3 has been retired
-    #
-    # @discord.ui.button(label="Tier 2 [Log]", style=discord.ButtonStyle.primary, custom_id="persistent_view:submit_log_t2", row=1)
-    # async def submit_log_t2(self, interaction: discord.Interaction, button: discord.ui.Button):
-    #     async with Session.begin() as session:
-    #         t1_role_id = int((await Config.get_value(session, ConfigKey.T1_ROLE_ID)))
-    #     for role in interaction.user.roles:
-    #         if role.id == t1_role_id:
-    #             break
-    #     else:
-    #         await interaction.response.send_message(ephemeral=True, content="You need to be tier 1 to apply for tier 2.")
-    #         return
-    #     await interaction.response.send_modal(SubmitLogModal(self.bot, 2, Role.NONE))
-    #
-    # @discord.ui.button(label="Tier 3: pDPS [Log]", style=discord.ButtonStyle.primary, custom_id="persistent_view:submit_log_t3_pdps", row=2)
-    # async def submit_log_t3_pdps(self, interaction: discord.Interaction, button: discord.ui.Button):
-    #     await self.submit_log_t3(interaction, Role.POWER_DPS)
-    #
-    # @discord.ui.button(label="Tier 3: cDPS [Log]", style=discord.ButtonStyle.primary, custom_id="persistent_view:submit_log_t3_cdps", row=2)
-    # async def submit_log_t3_cdps(self, interaction: discord.Interaction, button: discord.ui.Button):
-    #     await self.submit_log_t3(interaction, Role.CONDITION_DPS)
-    #
-    # @discord.ui.button(label="Tier 3: Boon DPS [Log]", style=discord.ButtonStyle.primary, custom_id="persistent_view:submit_log_t3_bdps", row=2)
-    # async def submit_log_t3_bdps(self, interaction: discord.Interaction, button: discord.ui.Button):
-    #     await self.submit_log_t3(interaction, Role.BOON_DPS)
-    #
-    # @discord.ui.button(label="Tier 3: Heal [Log]", style=discord.ButtonStyle.primary, custom_id="persistent_view:submit_log_t3_heal", row=2)
-    # async def submit_log_t3_heal(self, interaction: discord.Interaction, button: discord.ui.Button):
-    #     await self.submit_log_t3(interaction, Role.HEAL)
-    #
-    # async def submit_log_t3(self, interaction: discord.Interaction,role: Role):
-    #     async with Session.begin() as session:
-    #         config = await Config.to_dict(session)
-    #
-    #     # Check if user has the correct tier
-    #     for user_role in interaction.user.roles:
-    #         if user_role.id == int(config[ConfigKey.T2_ROLE_ID]) or user_role.id == int(config[ConfigKey.T3_ROLE_ID]):
-    #             break
-    #     else:
-    #         await interaction.response.send_message(ephemeral=True, content="You need to be at least tier 2 to apply for tier 3.")
-    #         return
-    #
-    #     # Check if user already has the role
-    #     for user_role in interaction.user.roles:
-    #         if user_role.id == int(config[role.get_config_key()]):
-    #             await interaction.response.send_message(ephemeral=True, content=f"You already have the tier 3 {role.value} role.")
-    #             return
-    #
-    #     await interaction.response.send_modal(SubmitLogModal(self.bot, 3, role))
 
     @discord.ui.button(label="View Progress", style=discord.ButtonStyle.green, custom_id="persistent_view:view_progress", row=3)
     async def view_progress(self, interaction: discord.Interaction, button: discord.ui.Button):

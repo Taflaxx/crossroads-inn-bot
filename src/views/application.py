@@ -117,10 +117,10 @@ class ApplicationView(discord.ui.View):
                 member = interaction.guild.get_member(interaction.user.id)
                 await member.add_roles(interaction.guild.get_role(int(config[ConfigKey.T1_ROLE_ID])))
                 await member.remove_roles(interaction.guild.get_role(int(config[ConfigKey.T0_ROLE_ID])))
-                embed.add_field(name=f"{FeedbackLevel.SUCCESS.emoji} Success! You are now Tier 1.", value="")
+                embed.add_field(name=f"{FeedbackLevel.SUCCESS.emoji} Success! You are now a Regular.", value="")
                 await self.original_message.edit(embed=embed, view=None)
                 ta_channel = interaction.guild.get_channel(int(config[ConfigKey.TIER_ASSIGNMENT_CHANNEL_ID]))
-                await ta_channel.send(content=f"{member.mention} Congrats on tier1 {get_random_success_emote()}")
+                await ta_channel.send(content=f"{member.mention} Congrats on becoming a Regular!{get_random_success_emote()}")
 
             case FeedbackLevel.WARNING:
                 embed.colour = discord.Colour.yellow()
