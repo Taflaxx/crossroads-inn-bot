@@ -30,7 +30,7 @@ class AdminCommands(commands.Cog):
     @app_commands.default_permissions(administrator=True)
     @app_commands.command(name="init")
     async def init(self, interaction: Interaction):
-        info_embed = CustomEmbed(self.bot, title="Tier Application initialization")
+        info_embed = CustomEmbed(self.bot, title="Regular Application initialization")
 
         # Check if config is set up correctly
         async with Session.begin() as session:
@@ -44,9 +44,8 @@ class AdminCommands(commands.Cog):
             if type(view) == ApplicationOverview:
                 view.stop()
 
-        embed = Embed(title="Tier Application Bot",
-                      description="You can use this bot to apply for tiers on this server. You can find the requirements for our tiers "
-                                  f"[here](https://discord.com/channels/226398442082140160/1028218316751380541/1029082959430553650).",
+        embed = Embed(title="Regular Application Bot",
+                      description="You can use this bot to apply for the `Regular` role on this server.",
                       colour=discord.Colour.from_rgb(99, 51, 4)
                       )
         embed.set_author(name=self.bot.user.display_name,
@@ -62,22 +61,13 @@ class AdminCommands(commands.Cog):
                               "__The bot will not store your API key__\n",
                         inline=False)
         embed.add_field(name=" ", value="", inline=False)
-        embed.add_field(name="How to apply for Tier 1",
-                        value="1. Press the `Tier 1` button below to start the application process\n"
+        embed.add_field(name="How to apply for Regular",
+                        value="1. Press the `Regular` button below to start the application process\n"
                               "2. Enter your API key and the name of the character that you want to apply with.\n"
                               "3. The bot will check your Mastery and how many bosses you have killed\n"
                               "4. Select your equipment template and the build you want to apply for\n"
                               "5. The bot will compare your equipment to the build you selected\n"
                               "6. If your gear is correct the bot will automatically grant you the role\n",
-                        inline=False)
-        embed.add_field(name=" ", value="", inline=False)
-        embed.add_field(name="How to apply for Tier 2 and above",
-                        value="1. Press one of the `Tier 2` or role specific `Tier 3` buttons below\n"
-                              "2. Enter your API key and the link to the log that you want to apply with\n"
-                              "3. The bot will do some automatic checks on your log and hand it over to the rolerights\n"
-                              "4. The rolerights will review your log and accept or deny it\n"
-                              "5. Once enough logs are approved you will be automatically granted the role. "
-                              "You can check your progress with the `View Progress` button below\n",
                         inline=False)
         await interaction.channel.send(view=ApplicationOverview(self.bot), embed=embed)
         info_embed.add_field(name="Embed initialized", value="", inline=False)
